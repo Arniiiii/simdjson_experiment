@@ -1,2 +1,4 @@
+simdjson/
 build/
 compile_commands.json
+install_dir/

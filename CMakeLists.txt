@@ -88,6 +88,7 @@ string(TOLOWER simdjson/version.h simdjson_VERSION_HEADER_LOCATION)
 string(TOLOWER simdjson/export.h simdjson_EXPORT_HEADER_LOCATION)
 
 set_property(TARGET simdjson PROPERTY VERSION ${simdjson_VERSION})
+set_property(TARGET simdjson PROPERTY SOVERSION ${simdjson_VERSION})
 
 packageProject(
   NAME simdjson
