@@ -79,7 +79,7 @@ file(DOWNLOAD
 add_library(simdjson ./simdjson/simdjson.cpp)
 target_include_directories(
   ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/simdjson/include>
-                         $<INSTALL_INTERFACE:include/simdjson/${PROJECT_NAME}>
+                         $<INSTALL_INTERFACE:include/simdjson>
 )
 
 # the location where the project's version header will be placed should match the project's regular
