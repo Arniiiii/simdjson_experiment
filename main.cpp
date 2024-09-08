@@ -1,5 +1,4 @@
-#include "simdjson/padded_string_view.h"
-#include "simdjson/ondemand.h"
+#include "simdjson/simdjson.h"
 #include <iostream>
 #include <string_view>
 int main(void) {

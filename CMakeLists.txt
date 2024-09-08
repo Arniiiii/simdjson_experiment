@@ -46,22 +46,6 @@ target_compile_options(${PROJECT_NAME}
 
 include(getCPM.cmake)
 
-set(simdjson_VERSION 3.10.1)
-cpmaddpackage(
-  NAME
-  simdjson
-  VERSION
-  "${simdjson_VERSION}"
-  URL
-  "https://github.com/simdjson/simdjson/archive/refs/tags/v${simdjson_VERSION}.tar.gz"
-  OPTIONS
-  "SIMDJSON_ENABLE_THREADS ON"
-  "BUILD_SHARED_LIBS ON"
-  "SIMDJSON_BUILD_STATIC_LIB OFF" 
-)
-
-target_link_libraries(${PROJECT_NAME} PUBLIC simdjson)
-
 set(packageProject_VERSION 1.12.0)
 cpmaddpackage(
   NAME
@@ -71,6 +55,54 @@ cpmaddpackage(
   URL
   "https://github.com/TheLartians/PackageProject.cmake/archive/refs/tags/v${packageProject_VERSION}.zip"
 )
+
+set(simdjson_VERSION 3.10.1)
+# cpmaddpackage(
+#   NAME
+#   simdjson
+#   VERSION
+#   "${simdjson_VERSION}"
+#   URL
+#   "https://github.com/simdjson/simdjson/archive/refs/tags/v${simdjson_VERSION}.tar.gz"
+#   OPTIONS
+#   "SIMDJSON_ENABLE_THREADS ON"
+#   "BUILD_SHARED_LIBS ON"
+#   "SIMDJSON_BUILD_STATIC_LIB OFF" 
+# )
+file(DOWNLOAD
+  https://github.com/simdjson/simdjson/releases/download/v${simdjson_VERSION}/simdjson.cpp
+./simdjson/simdjson.cpp)
+file(DOWNLOAD
+  https://github.com/simdjson/simdjson/releases/download/v${simdjson_VERSION}/simdjson.h
+  ./simdjson/include/simdjson/simdjson.h)
+
+add_library(simdjson ./simdjson/simdjson.cpp)
+target_include_directories(
+  ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/simdjson/include>
+                         $<INSTALL_INTERFACE:include/simdjson/${PROJECT_NAME}>
+)
+
+# the location where the project's version header will be placed should match the project's regular
+# header paths
+string(TOLOWER simdjson/version.h simdjson_VERSION_HEADER_LOCATION)
+string(TOLOWER simdjson/export.h simdjson_EXPORT_HEADER_LOCATION)
+
+set_property(TARGET simdjson PROPERTY VERSION ${simdjson_VERSION})
+
+packageProject(
+  NAME simdjson
+  VERSION ${simdjson_VERSION}
+  NAMESPACE ${simdjson}
+  BINARY_DIR ${PROJECT_BINARY_DIR}
+  INCLUDE_DIR ${PROJECT_SOURCE_DIR}/simdjson/include
+  INCLUDE_DESTINATION include/simdjson
+  VERSION_HEADER "${simdjson_VERSION_HEADER_LOCATION}" EXPORT_HEADER
+  "${simdjson_EXPORT_HEADER_LOCATION}"
+  COMPATIBILITY "AnyNewerVersion" DISABLE_VERSION_SUFFIX ON
+)
+
+
+target_link_libraries(${PROJECT_NAME} PUBLIC simdjson)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY VERSION ${PROJECT_VERSION})
 set_property(TARGET ${PROJECT_NAME} PROPERTY SOVERSION 1)
